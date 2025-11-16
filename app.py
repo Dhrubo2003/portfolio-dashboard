@@ -15,7 +15,7 @@ st.set_page_config(
 # -----------------------------
 st.title("👨‍💻 Dhrubo Bhattacharjee – ML & Analytics Portfolio")
 
-profile_pic_url = "https://drive.google.com/uc?export=view&id=YOUR_FILE_ID"
+profile_pic_url = "https://drive.google.com/uc?export=view&id=1AbCdEfGhIjKlmnOPqr"
 
 col1, col2 = st.columns([1, 3])
 
