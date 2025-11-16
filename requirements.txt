@@ -6,3 +6,5 @@ matplotlib
 plotly
 streamlit-lottie
 requests
+ipyvizzu
+Pillow
