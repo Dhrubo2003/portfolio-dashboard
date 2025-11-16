@@ -142,7 +142,7 @@ st.markdown(
 
 # ---------- Sidebar ----------
 with st.sidebar:
-    st.image(PROFILE_IMG_URL, width=140)
+    st.image("assets/images/profile.png", width=180)
     st.markdown(f"### {HEADLINE}")
     st.markdown(ABOUT_TEXT)
     st.markdown("---")
