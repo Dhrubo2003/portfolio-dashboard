@@ -192,7 +192,7 @@ with left_col:
     # Profile photo, headline, contact, experience slider
     if PROFILE_IMG:
         try:
-            st.image(PROFILE_IMG, width=180, caption=None)
+            st.image("assets/images/profile.png", width=180)
         except Exception:
             st.info("Profile image couldn't be loaded from link. Use PNG/JPG under 2MB (~400x400 recommended).")
     else:
