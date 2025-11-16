@@ -64,8 +64,10 @@ def skills_df_for_year(skills_dict, years):
 
 # ---------- Sidebar ----------
 with st.sidebar:
-    st.image("assets/images/.keep" if Path("assets/images/.keep").exists() else None,
-             width=120)  # if you later put an avatar file, replace this
+  
+    PROFILE_PIC_URL = "https://drive.google.com/file/d/1GcoDLu9Pm_pHfe6NOs3SGTltVT_F1qHJ/view?usp=sharing"
+    st.image(PROFILE_PIC_URL, width=120)
+
     st.markdown(f"### {HEADLINE}")
     st.markdown(ABOUT_TEXT)
     st.markdown("---")
