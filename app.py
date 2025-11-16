@@ -1,115 +1,122 @@
-# app.py
 import streamlit as st
 import pandas as pd
-import numpy as np
-import plotly.graph_objects as go
-import math
-from pathlib import Path
-from streamlit_lottie import st_lottie
-import json
-from io import BytesIO
-import base64
+import altair as alt
 
-# Import project data
-from data import PROFILE, SKILLS, PROJECTS, CERTIFICATIONS, HEADLINE, ABOUT_TEXT
-
+# -----------------------------
+# PAGE CONFIG
+# -----------------------------
 st.set_page_config(
-    page_title="Dhrubo Bhattacharjee — Future Skills Portfolio",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    page_title="Dhrubo Portfolio Dashboard",
+    layout="wide"
 )
 
-# ---------- Utilities ----------
-def load_lottie_file(path: Path):
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return None
+# -----------------------------
+# HEADER SECTION
+# -----------------------------
+st.title("👨‍💻 Dhrubo Bhattacharjee – ML & Analytics Portfolio")
 
-def make_download_link(url: str, filename: str = "resume.pdf"):
-    return f"[📄 Download Resume]({url})"
+profile_pic_url = "https://drive.google.com/uc?export=view&id=YOUR_FILE_ID"
 
-# Skill Growth Model
-def predict_skill_level(base, max_level, k, p, years):
-    years = max(0.0, float(years))
-    try:
-        growth = (1 - math.exp(-k * years)) ** p
-    except Exception:
-        growth = 0.0
-    return max(0.0, min(100.0, base + (max_level - base) * growth))
-
-def skills_df_for_year(skills_dict, years):
-    rows = []
-    for skill, meta in skills_dict.items():
-        predicted = predict_skill_level(
-            float(meta.get("base", 10)),
-            float(meta.get("max", 90)),
-            float(meta.get("k", 0.5)),
-            float(meta.get("p", 1.0)),
-            years
-        )
-        rows.append({
-            "skill": skill,
-            "current": float(meta.get("base", 10)),
-            "predicted": predicted,
-            "category": meta.get("category", "Other")
-        })
-    return pd.DataFrame(rows).sort_values("predicted", ascending=False)
-
-# ---------- Sidebar ----------
-with st.sidebar:
-
-    # YOUR GOOGLE DRIVE IMAGE
-    st.image(
-        "https://drive.google.com/uc?export=view&id=1GcoDLu9Pm_pHfe6NOs3SGTltVT_F1qHJ",
-        width=140
-    )
-
-    st.markdown(f"### {HEADLINE}")
-    st.markdown(ABOUT_TEXT)
-    st.markdown("---")
-
-    years = st.slider(
-        "Project experience (years)",
-        min_value=0.0, max_value=10.0, value=1.0, step=0.5,
-        help="Slide to simulate future experience."
-    )
-
-    st.markdown("**Target Roles:**")
-    st.write("- 0–2 yrs: ML Analyst / Junior ML Engineer")
-    st.write("- 3 yrs: ML Engineer")
-    st.write("- 5+ yrs: MLOps Lead")
-    st.markdown("---")
-
-    # YOUR RESUME LINK
-    resume_link = "https://drive.google.com/file/d/1HGv8HNeWkTYRu4DqXRjFXntwRt52HM3E/view?usp=sharing"
-    st.markdown(make_download_link(resume_link))
-
-    st.markdown("---")
-    st.caption("Theme: AI / Futuristic dashboard")
-
-# ---------- Top Hero Section ----------
-col1, col2 = st.columns([2, 3])
+col1, col2 = st.columns([1, 3])
 
 with col1:
-    st.title("Dhrubo Bhattacharjee")
-    st.subheader(HEADLINE)
-    st.write(ABOUT_TEXT)
-
-    col_kpi1, col_kpi2, col_kpi3 = st.columns(3)
-    col_kpi1.metric("Current Experience", "6 months")
-    col_kpi2.metric("Projects", len(PROJECTS))
-    col_kpi3.metric("Certifications", len(CERTIFICATIONS))
+    st.image(profile_pic_url, width=180)
 
 with col2:
-    lottie = load_lottie_file(Path("assets/lottie/ai_animation.json"))
-    if lottie:
-        st_lottie(lottie, height=250)
-    else:
-        st.image(
-            "https://drive.google.com/uc?export=view&id=1GcoDLu9Pm_pHfe6NOs3SGTltVT_F1qHJ",
-            width=320
-        )
+    st.subheader("ML & Data Analytics | AIML Grad | ELK (Beginner)")
+    st.write(
+        """
+        AIML graduate skilled in Python, ML modeling and beginner-level ELK configuration.  
+        I deliver reproducible ML pipelines and dashboards, and I’m focused on strengthening  
+        DevOps/MLOps competencies to grow into an ML Engineer and later an MLOps Lead.
+        """
+    )
+    st.download_button("📄 Download Resume", "resume.pdf", file_name="Dhrubo_Resume.pdf")
 
-st.markdown("---")
+st.write("---")
+
+# -----------------------------
+# AGE-BASED FUTURE SKILL PREDICTOR
+# -----------------------------
+
+st.header("📈 Future Skill Projection (ML-based Mock Model)")
+
+current_age = 22        # change this if needed
+age = st.slider("Select Age", min_value=current_age, max_value=current_age + 10, value=current_age)
+
+base_skills = {
+    "Python": 80,
+    "Machine Learning": 70,
+    "Data Analytics": 75,
+    "ELK Stack": 40,
+    "MLOps": 30,
+}
+
+# Simple growth model (each year improves skills)
+growth_per_year = {
+    "Python": 2,
+    "Machine Learning": 3,
+    "Data Analytics": 2,
+    "ELK Stack": 4,
+    "MLOps": 5,
+}
+
+years_difference = age - current_age
+
+predicted = {skill: base_skills[skill] + growth_per_year[skill] * years_difference
+             for skill in base_skills}
+
+df_skills = pd.DataFrame({
+    "Skill": list(predicted.keys()),
+    "Proficiency": list(predicted.values())
+})
+
+chart = (
+    alt.Chart(df_skills)
+    .mark_bar()
+    .encode(
+        x=alt.X("Proficiency:Q", title="Skill Level (%)"),
+        y=alt.Y("Skill:N", sort="-x"),
+        tooltip=["Skill", "Proficiency"]
+    )
+    .properties(height=300)
+)
+
+st.altair_chart(chart, use_container_width=True)
+
+# -----------------------------
+# PROJECTS SECTION
+# -----------------------------
+st.header("🚀 Projects")
+
+projects = {
+    "Real-time Flight Weather Prediction System": "Built using APIs, Streamlit, and ML.",
+    "Customer Churn ML Model": "Logistic Regression + Dashboards.",
+    "ELK Stack Log Monitoring (Beginner)": "Setting up Elasticsearch/Kibana for logs.",
+}
+
+for name, desc in projects.items():
+    st.markdown(f"### 🔹 {name}")
+    st.write(desc)
+
+# -----------------------------
+# CERTIFICATIONS
+# -----------------------------
+st.header("🎓 Certifications")
+
+certs = [
+    "AIML Graduate Certificate",
+    "Python for Data Science",
+    "Machine Learning Specialization",
+]
+
+st.write("\n".join([f"- {c}" for c in certs]))
+
+# -----------------------------
+# CONTACT
+# -----------------------------
+st.write("---")
+st.subheader("📬 Contact")
+st.write("📧 bhattacharjeedhrubo544@gmail.com")
+st.write("[LinkedIn Profile](https://www.linkedin.com/in/dhrubo-bhattacharjee/)")
+
